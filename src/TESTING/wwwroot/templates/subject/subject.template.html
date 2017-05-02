@@ -1,0 +1,54 @@
+﻿<div class="row">
+    <div class="col-xs-6">
+        <h2>Subjects: </h2>
+        <br />
+        <div class="subject_list">
+            <blockquote *ngFor="let subject of subjects;" >
+                <header>
+                    <b class="text-success">{{subject.name}}</b>
+                    <span>
+                        <span (click)="deleteSubject(subject)" class="glyphicon glyphicon-remove btn-right"></span>
+                        <span (click)="updateSubject(subject)" class="glyphicon glyphicon-pencil btn-right"></span>
+                    </span>
+                </header>
+
+                <p>
+                    {{subject.describtion}}
+                </p>
+            </blockquote>
+        </div>
+    </div>
+    <div class="col-xs-6">
+        <br />
+        <h4>Add new subject: </h4>
+        <form (submit)="addSubject(subject_name.value, subject_describtion.value)">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input #subject_name type="text" class="form-control" id="name" name="name" placeholder="Type name of subject">
+            </div>
+            <div class="form-group">
+                <label for="desc">Password:</label>
+                <input #subject_describtion type="text" class="form-control" id="desc" placeholder="Type describtion" name="describtion">
+            </div>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+
+        <div *ngIf="subjectToUpdate" class="update-subject-form">
+            <hr />
+            <h4>Updating Subject</h4>
+            <form (submit)="UpdateSubjectSubmit(subject_name_update.value, subject_desc_update.value, subject_id_update.value)">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input #subject_name_update type="text" class="form-control" id="name" name="name" placeholder="Type name of subject" value="{{subjectToUpdate.name}}">
+                </div>
+                <div class="form-group">
+                    <label for="desc">Password:</label>
+                    <input #subject_desc_update type="text" class="form-control" id="desc" placeholder="Type describtion" name="describtion" value="{{subjectToUpdate.describtion}}">
+                </div>
+                <input #subject_id_update type="hidden" name="subject" value="{{subjectToUpdate.id}}" />
+                <button type="submit" class="btn btn-success">Submit</button>
+                <a class="btn btn-danger" (click)="CancelUpdatingSubjects()">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>

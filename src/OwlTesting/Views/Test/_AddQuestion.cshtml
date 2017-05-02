@@ -1,0 +1,66 @@
+﻿@using Model.DTO
+@using OwlTesting.ViewModels
+@model QuestionDTO
+<b class="text-danger">
+	@Html.ValidationSummary()
+</b>
+	
+
+
+
+<form asp-action="AddQuestion" role="form" method="post">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Додавання питання" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="form-group">
+                <input type="hidden" asp-for="TestId" />
+                <label asp-for="Text" class="col-lg-3 col-sm-3 control-label">Текст питання: </label>
+                <div class="col-lg-6">
+                    <input name="Text" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageLink" class="col-lg-3 col-sm-3 control-label">Посилання на зображення: </label>
+                <div class="col-lg-6">
+                    <input asp-for="ImageLink" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <b>Відповіді: </b>
+            <br />
+            <a class="btn btn-success" onclick="addAnswer();"><i class="glyphicon glyphicon-plus"></i> Додати відповідь</a>
+        </div>
+            <div id="answer-container">
+
+            </div>
+
+        </div>
+        @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+
+<script>
+    function addAnswer() {
+        var answerPlace = $("#answer-container");
+        var count = $(".answer-unit").length;
+        $.ajax({
+            url: '@Url.Action("GetAnswerTemplate")',
+            data:{count: ++count},
+            type: 'POST',
+            success: function (data) {
+                var unit = $(data);
+                answerPlace.append(unit);
+            }
+        });
+    }
+
+    function deleteAnswer(btnElement) {
+        if (confirm("Ви точно хочете видалити питання? ")) {
+            var $answerUnit = $(btnElement).closest('.answer-unit');
+            $answerUnit.fadeOut(300, function () {
+                $answerUnit.find(".is-deleted").val('True');
+                $answerUnit.hide();
+            });
+        }
+    }
+</script>

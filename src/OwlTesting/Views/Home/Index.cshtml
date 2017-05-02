@@ -1,0 +1,39 @@
+﻿@using Model.DTO
+@model IEnumerable<SubjectDTO>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="jumbotron home-main-panel">
+	<div class="text">
+		МАБУТЬ, <br />
+		НАЙЛЕГШИЙ СПОСІБ<br /> КОНТРОЛЮВАТИ <br />
+		ТА СИСТЕМАТИЗУВАТИ<br /> ЗНАННЯ <br />
+	</div>
+
+</div>
+<br />
+<div class="row">
+	<h2>Доступні тести</h2>
+</div>
+<div class="row">
+	@foreach (var subject in Model)
+	{
+		<div class="col-sm-3 col-xs-12">
+			<h3>@subject.Name</h3>
+			@foreach (var test in subject.Tests)
+			{
+				bool toShowLabel = test.EndDate.HasValue ? (test.EndDate - DateTime.Now).Value.Days < 7 : false;
+				<p>
+					<span><a asp-action="TestReview" asp-controller="Test" asp-route-id="@test.Id" class="text-muted">• @test.Name</a></span>
+					@if (toShowLabel)
+					{
+						<span class="label label-danger">Скоро завершення</span>
+					}
+				</p>
+			}
+		</div>
+	}
+</div>
+

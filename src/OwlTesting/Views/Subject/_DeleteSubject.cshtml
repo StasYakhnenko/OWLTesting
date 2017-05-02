@@ -1,0 +1,13 @@
+﻿@model SubjectDTO
+@using OwlTesting.ViewModels
+@using Model.DTO
+
+<form asp-action="DeleteSubjectPost" role="form">
+    @Html.Partial("_ModalHeader", new ModalHeader { Heading = "Видалення предмету" })
+    <input type="hidden" asp-for="Id" />
+    <div class="modal-body form-horizontal">
+       Ви точно хочете видалити @Model.Name?
+    </div>
+    @Html.Partial("_ModalFooter", new ModalFooter { SubmitButtonText = "Видалити" })
+</form>
+

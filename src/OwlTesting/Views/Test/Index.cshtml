@@ -1,0 +1,26 @@
+﻿@using Model.DTO
+@model IEnumerable<TestDTO>
+<div class="row"><a asp-action="AddTest" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i>Додати тест</a></div>
+
+@foreach (var test in Model)
+{
+    <div class="row material-design-block">
+        <div class="col-xs-12">
+            <b class="text-success">@test.Name</b>
+            <div style="float:right">
+                <a asp-action="EditTest" asp-route-id="@test.Id" class="btn btn-trans">
+                    <i class="glyphicon glyphicon-pencil"></i>
+                </a>
+				<a asp-action="HistoryForTest" asp-route-id="@test.Id" class="btn btn-trans">
+					<i class="glyphicon glyphicon-stats"></i>
+				</a>
+            </div>
+            <p>
+                <b class="text-muted">Предмет: </b> @test.Subject.Name
+            </p>
+            <p>
+                <b class="text-muted">Кількість питаннь: </b> @(test.Questions?.Count ?? 0)
+            </p>
+        </div>
+    </div>
+}

@@ -1,0 +1,189 @@
+﻿body {
+	padding-top: 50px;
+	padding-bottom: 20px;
+	background-color:rgb(247,247,247);
+}
+
+/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+.body-content {
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+/* Set widths on the form inputs since otherwise they're 100% wide */
+input,
+select,
+textarea {
+	max-width: 480px;
+}
+
+.top-buffer {
+	margin-top: 15px;
+}
+
+/* Carousel */
+.carousel-caption p {
+	font-size: 20px;
+	line-height: 1.4;
+}
+
+/* Make .svg files in the carousel display properly in older browsers */
+.carousel-inner .item img[src$=".svg"] {
+	width: 100%;
+}
+
+/* Hide/rearrange for smaller screens */
+@media screen and (max-width: 767px) {
+	/* Hide captions */
+	.carousel-caption {
+		display: none;
+	}
+}
+
+.material-design-block {
+	margin-top: 10px;
+	background-color: #f8f8f8;
+	border: 1px solid #DDD;
+	border-radius: 5px;
+	border-width: 1px 1px 2px 1px;
+	padding: 10px;
+}
+
+.btn-trans {
+	color: #555;
+	background-color: transparent;
+	font-size:12px;
+	padding-left:2px;
+	padding-right:2px;
+}
+
+.btn-trans:hover {
+	color: #999;
+}
+
+.btn-trans:focus, .btn-trans:active {
+	color: #AAA;
+}
+
+.answer-block {
+	border: 1px dotted #ececec;
+	border-radius: 3px;
+	padding: 10px;
+	min-height: 70px;
+	text-align: center;
+	color: #666;
+	font-size: 16px;
+	line-height: 24px;
+}
+
+.answer-block .answer-img {
+	height: 280px;
+}
+
+.answer-block:hover {
+	background-color: #eee;
+	border-radius: 3px;
+}
+
+.answer-horizontal-block {
+	min-height: 50px;
+	vertical-align: central;
+	line-height: 50px;
+	transition: border-left 0.1s ease-in;
+}
+
+.answer-horizontal-block:hover {
+	background-color: #eee;
+	border-left: 5px solid rgba(233,144,2,1);
+}
+
+.test-body {
+	background-color: #f8f8f8;
+	border: 1px solid #DDD;
+	border-radius: 5px;
+	border-width: 1px 1px 2px 1px;
+	padding: 25px;
+}
+
+.wrong-answer-block {
+	color: rgba(240,65,36,1);
+}
+
+.right-answer-block {
+	color: rgba(67,172,106,1);
+}
+
+.checked-answer-block {
+	background-color: #f5f5f5;
+	border-left: 5px solid rgba(67,172,106,1) !important;
+}
+
+.checked-vertical-block {
+	background-color: #f5f5f5;
+}
+
+input[type=radio].css-checkbox {
+	position: absolute;
+	z-index: -1000;
+	left: -1000px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	height: 1px;
+	width: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+}
+
+input[type=radio].css-checkbox + label.css-label {
+	padding-left: 32px;
+	height: 27px;
+	display: inline-block;
+	line-height: 27px;
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	font-size: 14px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+input[type=radio].css-checkbox:checked + label.css-label {
+	background-position: 0 -27px;
+}
+
+label.css-label {
+	background-image: url(http://csscheckbox.com/checkboxes/u/csscheckbox_238eced2efb975320f384f55165f7eea.png);
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.answered-question{
+	background-color:rgba(67,172,106,1);
+	color:#ffffff !important;
+}
+
+.answered-question:hover{
+	background-color:rgb(71, 190, 115) !important;
+	color:#ffffff !important;
+}
+
+.home-main-panel {
+	height: 500px;
+	background: rgba(0, 0, 0, 0.2);
+	background: url('../images/background.jpg') center;
+
+}
+
+.home-main-panel .text{
+	color:#fff;
+	font-size:32px;
+	font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+	font-weight:100;
+	font-stretch:condensed;
+	text-align:right;
+}

@@ -1,0 +1,172 @@
+﻿@using Model.DTO
+@model TestStatsDTO
+
+<div class="row">
+	<div class="col-xs-12">
+		<h3 class="text-muted">Назва: <b>@Model.Test.Name</b></h3>
+		<h3 class="text-muted">Предмет: <b>@Model.Test.Subject.Name</b> </h3>
+		<h3 class="text-muted">Кількість питаннь: <b>@(Model.Test.Questions?.Count ?? 0)</b></h3>
+		<h3 class="text-muted">Всього проходженнь: <b>@(Model.Results?.Count ?? 0)</b></h3>
+	</div>
+</div>
+<br />
+<div class="row">
+	<div class="col-xs-6">
+		<h4 class="text-success">Пройдені / непройдені тести</h4>
+		<canvas id="chartForPercantage" width="400" height="400"></canvas>
+	</div>
+	<div class="col-xs-6">
+		<h2>Середній бал: <span class="text-muted">@Model.AvarageGrade</span></h2>
+		<h4>Кількість задовільних результатів: <span class="text-muted">@Model.PercantageOfAccepted %</span></h4>
+		<p>
+			Максимально можливий результат тесту: <span class="text-muted">@Model.Test.Grade</span>
+		</p>
+		<p>
+			Мінімальна вимога (у відсотках): <span class="text-muted">@Model.Test.Requirment %</span>
+		</p>
+	</div>
+</div>
+<hr />
+<div class="row">
+	<div class="col-xs-6">
+		<p>
+			<h2 class="text-success">Найлегше питання:</h2>
+			<span class="text-muted">@Model.EasiestQuestion.Text</span>
+		</p>
+		<p>
+			<h2 class="text-danger">Найважче питання:</h2>
+			<span class="text-muted">@Model.HardestQuestion.Text</span>
+		</p>
+	</div>
+	<div class="col-xs-6">
+		<h4 class="text-primary">Бали / кількість тестів</h4>
+		<canvas id="chartForBarsGrades" width="400" height="400"></canvas>
+	</div>
+</div>
+<hr />
+<div class="row">
+	<div class="col-xs-6">
+		<h4 class="text-warning">Вірні відповіді / номер питання</h4>
+		<canvas id="chartForBarsQuestions" width="400" height="400"></canvas>
+	</div>
+	<div class="col-xs-6">
+		<h4>Питання</h4>
+		@{
+			int i = 0;
+		}
+		@foreach (var question in Model.Test.Questions)
+		{
+			i++;
+			<p>
+				<b>Питання @i</b> - <span class="text-muted">@question.Text</span>
+			</p>
+		}
+	</div>
+</div>
+
+<div class="row"><h2>Історія проходженнь</h2></div>
+@foreach (var result in Model.Results)
+{
+	<div class="row material-design-block">
+		<h4 class="text-success">@result.User.FullName</h4>
+		<h6>Оцінка: <b class="text-success">@result.ResultGrade</b></h6>
+		<p>
+			Час початку: <span class="text-muted">@result.TimeStart</span>
+		</p>
+		<p>
+			Час завершення: <span class="text-muted">@result.TimeEnd</span>
+		</p>
+		<p>
+			Cтатус: <span class="text-muted">@result.Status.ToString()</span>
+		</p>
+		<a asp-action="ShowResult" asp-route-id="@result.Id">Переглянути деталі</a>
+	</div>
+}
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.js"></script>
+<script>
+	var ctx = document.getElementById("chartForPercantage");
+	var myChart = new Chart(ctx, {
+		type: 'doughnut',
+		data: {
+			labels: ["Пройдені", "Не пройдені"],
+			datasets: [{
+				label: 'Кількість',
+				data: [@Model.PercantageOfAccepted, @(100 - Model.PercantageOfAccepted)],
+				backgroundColor: [
+					'rgba(67, 172, 106, 0.4)',
+					'rgba(240, 65, 36, 0.4)',
+				],
+				borderColor: [
+					'rgba(67, 172, 106, 1)',
+					'rgba(240, 65, 36, 1)',
+				],
+				borderWidth: 1
+			}]
+		},
+		options: {
+			scales: {
+				yAxes: [{
+					ticks: {
+						beginAtZero: true
+					}
+				}]
+			}
+		}
+	});
+</script>
+<script>
+	var ctx = document.getElementById("chartForBarsQuestions");
+	var myChart = new Chart(ctx, {
+		type: 'bar',
+		data: {
+			labels: @Json.Serialize(Model.BarsOfQuestions.Skip(1).OrderBy(x => x.Key).Select(x => x.Key).ToArray()),
+			datasets: [{
+				label: 'Вірні відповіді',
+				data: @Json.Serialize(Model.BarsOfQuestions.Skip(1).OrderBy(x => x.Key).Select(x => x.Value).ToArray()),
+				backgroundColor:
+					'rgba(233, 144, 2, 0.4)',
+				borderColor:
+					'rgba(233, 144, 2, 0.4)',
+				borderWidth: 1
+			}]
+		},
+		options: {
+			scales: {
+				yAxes: [{
+					ticks: {
+						beginAtZero: true
+					}
+				}]
+			}
+		}
+	});
+</script>
+<script>
+	var ctx = document.getElementById("chartForBarsGrades");
+	var myChart = new Chart(ctx, {
+		type: 'bar',
+		data: {
+			labels: @Json.Serialize(Model.BarsOfGrades.OrderBy(x => x.Key).Select(x => x.Key).ToArray()),
+			datasets: [{
+				label: 'Кількість результатів',
+				data: @Json.Serialize(Model.BarsOfGrades.OrderBy(x => x.Key).Select(x => x.Value).ToArray()),
+				backgroundColor:
+					'rgba(0, 140, 186, 0.4)',
+				borderColor:
+					'rgba(0, 140, 186, 1)',
+				borderWidth: 1
+			}]
+		},
+		options: {
+			scales: {
+				yAxes: [{
+					ticks: {
+						beginAtZero: true
+					}
+				}]
+			}
+		}
+	});
+</script>

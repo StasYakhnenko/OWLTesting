@@ -1,0 +1,112 @@
+﻿@using Model.DTO
+@model TestResultShowDTO
+
+@{
+	var isAcceptable = Model.TestResult.ResultGrade >= (Model.TestResult.Test.Requirment / 100) * Model.TestResult.Test.Grade;
+}
+<div class="row">
+	<div class="col-xs-12">
+		<p>
+			<span class="text-muted">Тест</span> <b>#@Model.TestResult.Id</b>
+		</p>
+		<p>
+			<span class="text-muted">Назва: </span><b>@Model.TestResult.Test.Name</b>
+		</p>
+		<p>
+			<span class="text-muted">Користувач: </span><b>@Model.TestResult.User.FullName</b>
+		</p>
+		<p>
+			<span class="text-muted">Статус: </span>
+			@if (isAcceptable)
+			{
+				<b class="text-success"> Пройдений</b>
+			}
+			else
+			{
+				<b class="text-danger"> Не пройдений</b>
+			}
+		</p>
+	</div>
+</div>
+<br />
+<div class="row">
+	<div class="col-xs-5">
+		<canvas id="myChart" width="400" height="400"></canvas>
+	</div>
+	<div class="col-xs-7">
+		<h1>Бал: @Model.TestResult.ResultGrade з @Model.TestResult.Test.Grade</h1>
+		<h3 class="text-muted">Відсоток вірних: @Model.PercantageOfRight %</h3>
+	</div>
+</div>
+<br />
+<div class="row">
+	<div class="col-xs-12">
+		@foreach (var question in Model.TestResult.Questions)
+		{
+			var answersRight = question.Question.Answers.Where(x => x.IsCorrect).Select(x => x.Text).ToList();
+			var givenAnswers = question.Answers.Select(x => x.Answer.Text).ToList();
+			var cssClassForQuestion = question.Status == Common.StatusQuestion.Wrong ? "wrong-answer-block" : (question.Status == Common.StatusQuestion.PartialRight ? "partial-right-answer-block" : "right-answer-block");
+			<div class="row material-design-block @cssClassForQuestion">
+				<div class="col-xs-2">
+					<img src="@question.Question.ImageLink" class="img-responsive img-thumbnail" alt="" style="max-height:75px;" />
+				</div>
+				<div class="col-xs-10">
+					<h4>@question.Question.Text</h4>
+					<p class="text-muted">
+						Вірна відповідь:
+						@foreach (var answer in answersRight)
+						{
+							<b>@answer </b>
+							<br />
+						}
+					</p>
+					@if (question.Status == Common.StatusQuestion.PartialRight || question.Status == Common.StatusQuestion.Wrong)
+					{
+						<p class="text-muted">
+							Дана відповідь:
+							@foreach (var answer in givenAnswers)
+							{
+								<b>@answer </b>
+								<br />
+							}
+						</p>
+					}
+				</div>
+			</div>
+		}
+	</div>
+</div>
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.js"></script>
+<script>
+	var ctx = document.getElementById("myChart");
+	var myChart = new Chart(ctx, {
+		type: 'doughnut',
+		data: {
+			labels: ["Вірні відповіді", "Не вірні відповіді"],
+			datasets: [{
+				label: '# of Votes',
+				data: [@Model.PercantageOfRight, @(100 - Model.PercantageOfRight)],
+				backgroundColor: [
+					'rgba(67, 172, 106, 0.4)',
+					'rgba(240, 65, 36, 0.4)',
+				],
+				borderColor: [
+					'rgba(67, 172, 106, 1)',
+					'rgba(240, 65, 36, 1)',
+				],
+				borderWidth: 1
+			}]
+		},
+		options: {
+			scales: {
+				yAxes: [{
+					ticks: {
+						beginAtZero: true
+					}
+				}]
+			}
+		}
+	});
+</script>

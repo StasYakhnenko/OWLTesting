@@ -1,0 +1,35 @@
+﻿@using Model.DTO
+@using OwlTesting.ViewModels
+
+@model IEnumerable<SubjectDTO>
+
+<div class="row">
+    <a id="createEditSubjectModal" data-toggle="modal" asp-action="AddSubject" data-target="#modal-action" class="btn btn-success">
+        <i class="glyphicon glyphicon-plus"></i>  Додати предмет
+    </a>
+</div>
+
+@foreach (var subject in Model)
+{
+    <div class="row material-design-block">
+        <div class="col-xs-11">
+            <h4 class="text-success">@subject.Name</h4>
+            <span class="text-muted">@subject.Describtion</span>
+        </div>
+        <div class="col-xs-1">
+            <a id="editUserModal" data-toggle="modal" asp-action="EditSubject" asp-route-id="@subject.Id" data-target="#modal-action"
+               class="btn btn-trans">
+                <i class="glyphicon glyphicon-pencil"></i> 
+            </a>
+            <a id="deleteUserModal" data-toggle="modal" asp-action="DeleteSubject" asp-route-id="@subject.Id" data-target="#modal-action" class="btn btn-trans">
+                <i class="glyphicon glyphicon-trash"></i>
+            </a>
+        </div>
+    </div>
+}
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action", AreaLabeledId = "modal-action-subject-label", Size = ModalSize.Large })
+
+@section scripts
+{
+    <script src="~/js/subject-index.js" asp-append-version="true"></script>
+}

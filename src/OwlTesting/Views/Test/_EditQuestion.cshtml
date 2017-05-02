@@ -1,0 +1,91 @@
+﻿@using Model.DTO
+@using OwlTesting.ViewModels
+@model QuestionDTO
+@Html.ValidationSummary()
+<form asp-action="EditQuestion" asp-route-id="@Model.Id" role="form" method="post">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Редагування питання" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="form-group">
+                <input type="hidden" asp-for="TestId" />
+                <label asp-for="Text" class="col-lg-3 col-sm-3 control-label">Текст питання: </label>
+                <div class="col-lg-6">
+                    <input asp-for="Text" class="form-control" required />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageLink" class="col-lg-3 col-sm-3 control-label">Посилання на зображення: </label>
+                <div class="col-lg-6">
+                    <input asp-for="ImageLink" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-0"></div>
+            <div class="col-xs-12">
+                <br />
+                <a class="btn btn-success btn-sm" onclick="addAnswer();"><i class="glyphicon glyphicon-plus"></i> Додати відповідь</a>
+                <br />
+            </div>
+        </div>
+        <div id="answer-container">
+            @if (Model.Answers != null)
+            {
+                var i = 0;
+                @foreach (var answer in Model.Answers)
+                {
+                    <div class="row">
+                        <div class="answer-unit" style="margin:25px;">
+							<input type="hidden" name="Answers[@i].IsDeleted" value="@(Model.Answers[i]?.IsDeleted.ToString() ?? false.ToString())" />
+                            <b>Відповідь № @(i + 1)</b>
+                            <button class="btn btn-xs btn-trans" style="float:right;" type="button" onclick="deleteAnswer(this);"><i class="glyphicon glyphicon-remove"></i></button>
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-lg-3 col-sm-3 control-label">Текст: </label>
+                                    <input type="text" name="Answers[@i].Text" class="form-control" value="@Model.Answers[i].Text" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-3 col-sm-3 control-label">Посиланна на зображення: </label>
+                                    <input type="text" name="Answers[@i].ImageLink" value="@Model.Answers[i].ImageLink" class="form-control">
+                                </div>
+                                <div class="checkbox">
+                                    <label> <input asp-for="Answers[i].IsCorrect" /> Правильна відповідь</label>
+                                </div>
+                            </div>
+                            <hr />
+                        </div>
+                    </div>
+                    i++;
+                }
+            }
+        </div>
+
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+
+<script>
+    function addAnswer() {
+        var answerPlace = $("#answer-container");
+        var count = $(".answer-unit").length;
+        $.ajax({
+            url: '@Url.Action("GetAnswerTemplate")',
+            data:{count: ++count},
+            type: 'POST',
+            success: function (data) {
+                var unit = $(data);
+                answerPlace.append(unit);
+            }
+        });
+    }
+
+    function deleteAnswer(btnElement) {
+        if (confirm("Ви точно хочете видалити питання? ")) {
+            var $answerUnit = $(btnElement).closest('.answer-unit');
+            $answerUnit.fadeOut(300, function () {
+                $answerUnit.find(".is-deleted").val('True');
+                $answerUnit.hide();
+            });
+        }
+    }
+</script>

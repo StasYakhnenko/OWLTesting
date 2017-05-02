@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using OwlTesting.ViewModels
+@using Model.DB
+
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+
+@if (SignInManager.IsSignedIn(User))
+{
+
+	@if (User.IsInRole("Administrator"))
+	{
+		<li><a asp-area="" asp-controller="Subject" asp-action="Index">Предмети</a></li>
+		<li><a asp-area="" asp-controller="Test" asp-action="Index">Тести</a></li>
+		<li><a asp-area="" asp-controller="User" asp-action="Index">Користувачі</a></li>
+	} else
+	if (User.IsInRole("Teacher"))
+	{
+		<li><a asp-area="" asp-controller="Test" asp-action="AddTest">Додати тест</a></li>
+		<li><a asp-area="" asp-controller="Test" asp-action="TestsForTeacher">Редагування тестів</a></li>
+		<li><a asp-area="" asp-controller="Test" asp-action="TestsForPass">Тести для проходження</a></li>
+	}
+	else
+	{
+		<li><a asp-area="" asp-controller="Test" asp-action="TestsForPass">Доступні тести</a></li>
+	}
+}
+

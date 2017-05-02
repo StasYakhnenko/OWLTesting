@@ -1,0 +1,78 @@
+﻿@using Model.DTO
+@using OwlTesting.ViewModels
+@model QuestionDTO
+
+@{
+    bool isMultiSelectable = Model.Answers.Where(x => x.IsCorrect).ToList().Count > 1;
+    bool isVerticalAnswers = Model.Answers.Where(x => !string.IsNullOrEmpty(x.ImageLink)).ToList().Count >= 1;
+    int countOfAnswers = Model.Answers.Count;
+    int colClass = (12 / countOfAnswers);
+    int i = 1;
+}
+@await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Прев'ю питання" })
+<div class="modal-body form-horizontal">
+    <div class="row ">
+        @if (string.IsNullOrEmpty(Model.ImageLink))
+        {
+            <div class="col-xs-12">
+                <span class="text-primary" style="font-size:16px;">@Model.Text</span>
+            </div>
+        }
+        else
+        {
+            <div class="col-xs-12 col-md-8">
+                <img src="@Model.ImageLink" class="img-thumbnail img-responsive" alt="" />
+            </div>
+            <div class="col-xs-12 col-md-4">
+                <span class="text-primary" style="font-size:16px;">@Model.Text</span>
+            </div>
+        }
+
+    </div>
+    <hr />
+    <div class="row question-unit">
+
+        @foreach (var item in Model.Answers)
+        {
+            if (isVerticalAnswers)
+            {
+                <div class="col-xs-@colClass answer-block">
+                    @if (isMultiSelectable)
+                    {
+                        <label style="float:left"><input type="checkbox" name="answerId" /></label>
+                    }
+                    else
+                    {
+                        <label><input type="radio" name="answerId" /></label>
+                    }
+                    <div class="col-xs-12">
+                        <b>@item.Text</b>
+                    </div>
+                    @if (!string.IsNullOrEmpty(item.ImageLink))
+                    {
+                        <div class="col-xs-12 answer-img">
+                            <img src="@item.ImageLink" class="img-thumbnail img-responsive" alt="" />
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="col-xs-12 answer-horizontal-block">
+                    @if (isMultiSelectable)
+                    {
+                        <label style="float:left"><input type="checkbox" name="answerId" /></label>
+                    }
+                    else
+                    {
+                        <label><input type="radio" name="answerId" /></label>
+                    }
+                    <b>@item.Text</b>
+                </div>
+            }
+            i++;
+        }
+    </div>
+</div>
+<script>
+</script>

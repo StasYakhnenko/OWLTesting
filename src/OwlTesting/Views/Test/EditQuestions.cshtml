@@ -1,0 +1,56 @@
+﻿@using Model.DTO
+@using OwlTesting.ViewModels
+@model TestDTO
+
+<div class="row">
+    <h1>@Model.Name</h1>
+    <p>
+        <b class="text-muted">Предмет: </b> @Model.Subject.Name
+    </p>
+    <p>
+        <b class="text-muted">Кількість питаннь: </b> @(Model.Questions?.Count ?? 0)
+    </p>
+</div>
+
+<div class="row">
+    <a id="createQuestionModal" data-toggle="modal" asp-action="AddQuestion" asp-route-testId="@Model.Id" data-target="#modal-action" class="btn btn-success">
+        <i class="glyphicon glyphicon-plus"></i>  Додати питання
+    </a>
+	<a asp-action="EditTest" asp-route-id="@Model.Id" class="btn btn-primary">Назад до редагування базової інформації</a>
+</div>
+<hr />
+<h3 class="text-success">Питання: </h3>
+@if (Model.Questions != null)
+{
+    var i = 1;
+    @foreach (var question in Model.Questions)
+    {
+        <div class="row material-design-block" style="min-height:100px">
+            <div class="col-xs-2">
+                <img src="@question.ImageLink" class="img-responsive img-thumbnail" alt="" />
+            </div>
+            <div class="col-xs-10">
+                <div style="float:right">
+                    <b># @i</b>
+                    <a id="editQuestionModal" data-toggle="modal" asp-action="EditQuestion" asp-route-questionId="@question.Id" data-target="#modal-action" class="btn btn-sm btn-trans">
+                        <i class="glyphicon glyphicon-pencil"></i>
+                    </a>
+                </div>
+                <h4><a data-toggle="modal" class="text-success" asp-action="PreviewQuestion" asp-route-questionId="@question.Id" data-target="#modal-action">@question.Text</a></h4>
+                <br />
+                <p>
+                    <small>Кількість відповідей: </small>
+                    <b class="text-success">@question.Answers?.Count</b>
+                </p>
+            </div>
+        </div>
+        i++;
+    }
+}
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action", AreaLabeledId = "modal-action-subject-label", Size = ModalSize.Large })
+
+@section scripts
+{
+    <script src="~/js/subject-index.js" asp-append-version="true"></script>
+}

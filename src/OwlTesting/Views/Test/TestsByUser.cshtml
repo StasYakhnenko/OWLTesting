@@ -1,0 +1,87 @@
+﻿@using Model.DTO
+@model UserTestStatsDTO
+
+<div class="row">
+	<div class="col-xs-12">
+		<h1>Користувач: <b class="text-muted">@Model.UserName</b></h1>
+		<br />
+		<h3>Всього пройдених тестів: <b>@(Model.TestResults?.Count ?? 0)</b> </h3>
+	</div>
+</div>
+@if (Model.TestResults.Count > 0)
+{
+	<div class="row">
+		<div class="col-xs-6">
+			<h4 class="text-success">Пройдені / непройдені тести</h4>
+			<canvas id="chartForPercantage" width="400" height="400"></canvas>
+		</div>
+		<div class="col-xs-6">
+			<h2>Середній бал: <span class="text-muted">@Model.AvarageGrade</span></h2>
+			<h4>Кількість задовільних результатів: <span class="text-muted">@Model.PercantageOfAccepted %</span></h4>
+			<p>
+				Найкращий тест: <span class="text-muted">@Model.BestTest?.Test.Name <br /><small>Оцінка: @Model.BestTest?.ResultGrade Дата: @Model.BestTest?.TimeStart</small></span>
+			</p>
+			<p>
+				Найгірший тест: <span class="text-muted">@Model.WorthestTest?.Test.Name <br /><small>Оцінка: @Model.WorthestTest?.ResultGrade Дата: @Model.WorthestTest?.TimeStart</small></span>
+			</p>
+			<p>
+				Предмет найкращої успішності: <span class="text-success">@Model.HardestSubject?.Name</span>
+			</p>
+			<p>
+				Предмет, найгіршої успішності: <span class="text-danger">@Model.EasiestSubject?.Name</span>
+			</p>
+		</div>
+	</div>
+}
+
+<br />
+<div class="row"><h2>Історія проходженнь</h2></div>
+@foreach (var result in Model.TestResults)
+{
+	<div class="row material-design-block">
+		<h4 class="text-success">@result.Test.Name</h4>
+		<h6>Оцінка: <b class="text-success">@result.ResultGrade</b></h6>
+		<p>
+			Предмет: <span class="text-muted">@result.Test.Subject.Name</span>
+		</p>
+		<p>
+			Час початку: <span class="text-muted">@result.TimeStart</span>
+		</p>
+		<p>
+			Час завершення: <span class="text-muted">@result.TimeEnd</span>
+		</p>
+		<a asp-action="ShowResult" asp-route-id="@result.Id">Переглянути деталі</a>
+	</div>
+}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.js"></script>
+<script>
+	var ctx = document.getElementById("chartForPercantage");
+	var myChart = new Chart(ctx, {
+		type: 'doughnut',
+		data: {
+			labels: ["Пройдені", "Не пройдені"],
+			datasets: [{
+				label: 'Кількість',
+				data: [@Model.PercantageOfAccepted, @(100 - Model.PercantageOfAccepted)],
+				backgroundColor: [
+					'rgba(67, 172, 106, 0.4)',
+					'rgba(240, 65, 36, 0.4)',
+				],
+				borderColor: [
+					'rgba(67, 172, 106, 1)',
+					'rgba(240, 65, 36, 1)',
+				],
+				borderWidth: 1
+			}]
+		},
+		options: {
+			scales: {
+				yAxes: [{
+					ticks: {
+						beginAtZero: true
+					}
+				}]
+			}
+		}
+	});
+</script>

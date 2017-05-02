@@ -1,0 +1,204 @@
+﻿@using OwlTesting.ViewModels
+@model TestQuestionViewModel
+@{
+	bool isMultiSelectable = Model.Question.Question.Answers.Where(x => x.IsCorrect).ToList().Count > 1;
+	bool isVerticalAnswers = Model.Question.Question.Answers.Where(x => !string.IsNullOrEmpty(x.ImageLink)).ToList().Count >= 1;
+	int countOfAnswers = Model.Question.Question.Answers.Count;
+	int colClass = (12 / countOfAnswers);
+	int i = 1;
+	int secondsDuration = (int)(Model.MaxTimeEnd- DateTime.Now).TotalSeconds;
+}
+<div class="row">
+	<div class="col-xs-10"></div>
+	<div class="col-xs-2">
+		<span class="text-danger" id="time"></span>
+	</div>
+</div>
+<div class="col-xs-2">
+	<div class="list-group">
+		@for (int j = 0; j < Model.QuestionsCount; j++)
+		{
+			var cssClass = Model.GivenAnswers[j] ? "answered-question" : string.Empty;
+			<a asp-action="PassTestQuestion" asp-route-id="@Model.Question.TestResultId" asp-route-questionOrderId="@j" class="list-group-item @cssClass">#@(j + 1) Питання</a>
+		}
+	</div>
+</div>
+<div class="col-xs-10">
+	<form asp-action="GiveAnswerForQuestion" method="post" onsubmit="validateForm(); return false;">
+		<input type="hidden" name="testResultId" value="@Model.Question.TestResultId" />
+		<input type="hidden" name="questionId" value="@Model.Question.Id" />
+		<input type="hidden" name="questionOrderId" value="@Model.CurrentQuestionOrder" />
+		<div class="form-horizontal test-body">
+			<div class="row ">
+				@if (string.IsNullOrEmpty(Model.Question.Question.ImageLink))
+			{
+					<div class="col-xs-12">
+						<span class="text-primary" style="font-size:16px;">@Model.Question.Question.Text</span>
+					</div>
+			}
+			else
+			{
+					<div class="col-xs-12 col-md-8">
+						<img src="@Model.Question.Question.ImageLink" class="img-thumbnail img-responsive" alt="" />
+					</div>
+					<div class="col-xs-12 col-md-4">
+						<span class="text-primary" style="font-size:16px;">@Model.Question.Question.Text</span>
+					</div>
+			}
+
+			</div>
+			<hr />
+			<div class="row question-unit">
+
+				@foreach (var item in Model.Question.Question.Answers)
+			{
+				if (isVerticalAnswers)
+				{
+						<div class="col-xs-@colClass answer-block answer-checkbox-block" answer-id="@item.Id">
+							@if (isMultiSelectable)
+							{
+								<label style="float:left"><input type="checkbox" name="answerId" class="checkbox-answer"/></label>
+							}
+							else
+							{
+								<label><input type="radio" value="@item.Id" name="answerId" class="radio-answer" /></label>
+							}
+							<div class="col-xs-12">
+								<b>@item.Text</b>
+							</div>
+							@if (!string.IsNullOrEmpty(item.ImageLink))
+							{
+								<div class="col-xs-12 answer-img">
+									<img src="@item.ImageLink" class="img-thumbnail img-responsive" alt="" />
+								</div>
+							}
+						</div>
+				}
+				else
+				{
+						<div class="col-xs-12 answer-horizontal-block answer-checkbox-block" answer-id="@item.Id">
+							@if (isMultiSelectable)
+							{
+								<label style="float:left"><input type="checkbox" name="answerId" class="checkbox-inline checkbox-answer" />@item.Text</label>
+							}
+							else
+							{
+								<input type="radio" id="@item.Id" name="answerId" value="@item.Id" class="radio-answer css-checkbox" />
+								<label class="css-label" for="@item.Id">@item.Text</label>
+							}
+							
+						</div>
+				}
+				i++;
+			}
+			</div>
+		</div>
+		<br />
+		<div class="row">
+			<div class="col-xs-9">
+				@if (Model.CurrentQuestionOrder != 0)
+			{
+					<a class="btn btn-primary" asp-action="PassTestQuestion" asp-route-id="@Model.Question.TestResultId" asp-route-questionOrderId="@(Model.CurrentQuestionOrder - 1)">Назад</a>
+			}
+			</div>
+			<div class="col-xs-3">
+				@if (Model.CurrentQuestionOrder != Model.QuestionsCount - 1)
+				{
+					<a class="btn btn-primary" asp-action="PassTestQuestion" asp-route-id="@Model.Question.TestResultId" asp-route-questionOrderId="@(Model.CurrentQuestionOrder + 1)">Далі</a>
+					<button type="submit" class="btn btn-success" asp-action="PassTestQuestion" asp-route-id="@Model.Question.TestResultId" asp-route-questionOrderId="@(Model.CurrentQuestionOrder + 1)">Відповісти</button>
+				}
+				else
+				{
+					<button type="submit" class="btn btn-success" asp-action="PassTestQuestion" asp-route-id="@Model.Question.TestResultId" asp-route-questionOrderId="@(Model.CurrentQuestionOrder + 1)" onsubmit="askUser();">Завершити</button>
+				}
+			</div>
+		</div>
+	</form>
+</div>
+
+<script>
+	$(document).ready(function () {
+		$(".list-group-item:nth-child(@(Model.CurrentQuestionOrder + 1 ))").addClass("active");
+
+		display = document.querySelector('#time');
+		startTimer(@secondsDuration , display);
+
+		$('.checkbox-answer').change(function () {
+			if ( $(this).prop('checked') == true) {
+				var value = $(this).closest('.answer-checkbox-block').attr('answer-id');
+				$(this).closest('.answer-checkbox-block').append($('<input type="hidden" name="answerId" value="' + value + '" />'));
+				$(this).closest('.answer-horizontal-block').addClass('checked-answer-block');
+			}
+			else{
+				$(this).closest('.answer-checkbox-block').find('input[type=hidden]').remove();
+				$(this).closest('.answer-horizontal-block').removeClass('checked-answer-block');
+			}
+		});
+
+		$('.radio-answer').change(function () {
+			$('.answer-horizontal-block').each(function () {
+				$(this).removeClass('checked-answer-block');
+			})
+			$('.answer-block').each(function () {
+				$(this).removeClass('checked-vertical-block');
+			})
+			$(this).closest('.answer-horizontal-block').addClass('checked-answer-block');
+			$(this).closest('.answer-block').addClass('checked-vertical-block');
+		});
+
+		@if (Model.Question.Answers !=null)
+		{
+			foreach (var answer in Model.Question.Answers)
+			{
+				<text>
+		$("input[name=answerId][value='" + @answer.AnswerId + "']").prop('checked', 'checked').change();
+		$(".answer-checkbox-block[answer-id='" + @answer.AnswerId +"'] input[type=checkbox]").prop('checked', 'checked').change();
+		console.log($(".answer-checkbox-block[answer-id='" + @answer.AnswerId +"'] input[type=checkbox]"));
+		</text>
+			}
+		}
+	});
+
+	function validateForm(form) {
+		var count = $("input[name=answerId]:checked, input[type=hidden][name=answerId]").length;
+		if (count === 0) {
+			alert("Оберіть будь ласка відповідь!");
+			return false;
+		}
+		form.submit();
+	}
+
+	function askUser() {
+		return confirm("Ви впевпнені, що ви хочете завершити проходження тесту?");
+	}
+	function startTimer(duration, display) {
+		var isStoped = false;
+		var start = Date.now(),
+			diff,
+			minutes,
+			seconds;
+		function timer() {
+			if (!isStoped) {
+				diff = duration - (((Date.now() - start) / 1000) | 0);
+
+				minutes = (diff / 60) | 0;
+				seconds = (diff % 60) | 0;
+
+				if (minutes < 0 || seconds < 0) {
+					isStoped = true;
+					display.textContent += ' Час вийшов!';
+					return;
+				}
+
+				minutes = minutes < 10 ? "0" + minutes : minutes;
+				seconds = seconds < 10 ? "0" + seconds : seconds;
+
+				display.textContent = minutes + ":" + seconds;
+			}
+		};
+		timer();
+		setInterval(timer, 1000);
+	}
+
+
+</script>

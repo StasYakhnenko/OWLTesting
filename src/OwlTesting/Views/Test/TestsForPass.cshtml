@@ -1,0 +1,28 @@
+﻿@using Model.DTO
+@model IEnumerable<TestDTO>
+
+@foreach (var test in Model)
+{
+	bool toShowLabel = test.EndDate.HasValue ? (test.EndDate - DateTime.Now).Value.Days < 7 : false;
+	<div class="row material-design-block">
+		<div class="col-xs-12">
+			<b class="text-success">@test.Name</b>
+			@if (toShowLabel)
+			{
+				<span class="label label-danger">Скоро завершення</span>
+			}
+			<p>
+				<b class="text-muted">Предмет: </b> @test.Subject.Name
+			</p>
+			<p>
+				<b class="text-muted">Кількість питаннь: </b> @(test.Questions?.Count ?? 0)
+			</p>
+			<p>
+				<b class="text-muted">Оцінка: </b> @(test.Grade)
+			</p>
+			<p>
+				<a asp-action="TestReview" asp-route-id="@test.Id" class="btn btn-success"><i class="glyphicon glyphicon-chevron-down"></i>Пройти тест</a>
+			</p>
+		</div>
+	</div>
+}
